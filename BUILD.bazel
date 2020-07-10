@@ -1,0 +1,51 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# NOTE: instead of 'cc_grpc_library' from '@com_github_grpc_grpc'
+# could also use 'cpp_grpc_library' from 'rules_proto_grpc' (by first
+# bringing in 'rules_proto_grpc' in WORKSPACE.bazel).
+load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
+
+proto_library(
+    name = "route_guide",
+    srcs = ["protos/route_guide.proto"],
+)
+
+cc_proto_library(
+    name = "route_guide_proto",
+    deps = [":route_guide"],
+)
+
+cc_grpc_library(
+    name = "route_guide_grpc",
+    srcs = [":route_guide"],
+    grpc_only = True,
+    deps = [":route_guide_proto"],
+)
+
+cc_binary(
+    name = "route_guide_client",
+    srcs = [
+        "route_guide/helper.cc",
+        "route_guide/helper.h",
+        "route_guide/route_guide_client.cc",
+    ],
+    data = ["route_guide/route_guide_db.json"],
+    deps = [
+        ":route_guide_grpc",
+        "@stout-grpc//:grpc",
+    ],
+)
+
+cc_binary(
+    name = "route_guide_server",
+    srcs = [
+        "route_guide/helper.cc",
+        "route_guide/helper.h",
+        "route_guide/route_guide_server.cc",
+    ],
+    data = ["route_guide/route_guide_db.json"],
+    deps = [
+        ":route_guide_grpc",
+        "@stout-grpc//:grpc",
+    ],
+)

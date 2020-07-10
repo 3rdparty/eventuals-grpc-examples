@@ -1,0 +1,36 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Release 1.29.1.
+http_archive(
+    name = "com_github_grpc_grpc",
+    urls = ["https://github.com/grpc/grpc/archive/7d89dbb311f049b43bda7bbf6f7d7bf1b4c24419.zip"],
+    sha256 = "f8f61b159bf43d49c434046314e9743a2b0e8f019774a6251d7950ec47a941a4",
+    strip_prefix = "grpc-7d89dbb311f049b43bda7bbf6f7d7bf1b4c24419",
+)
+
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+
+grpc_deps()
+
+load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
+
+grpc_extra_deps()
+
+# http_archive(
+#     name = "stout-grpc",
+#     url = "https://github.com/benh/stout-grpc/archive/0.1.0.tar.gz",
+# #    sha256 = "",
+#     strip_prefix = "stout-grpc-0.0.1",
+# )
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+git_repository(
+    name = "stout-grpc",
+    remote = "https://github.com/benh/stout-grpc.git",
+    commit = "1f2da648b16ef6c131a2f9df17690f5ada30290d",
+)
+
+load("@stout-grpc//bazel:stout_grpc_deps.bzl", "stout_grpc_deps")
+
+stout_grpc_deps()
