@@ -16,19 +16,11 @@ load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
 
 grpc_extra_deps()
 
-# http_archive(
-#     name = "stout-grpc",
-#     url = "https://github.com/benh/stout-grpc/archive/0.1.0.tar.gz",
-# #    sha256 = "",
-#     strip_prefix = "stout-grpc-0.0.1",
-# )
-
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
-git_repository(
+http_archive(
     name = "stout-grpc",
-    remote = "https://github.com/benh/stout-grpc.git",
-    commit = "5d2d90df7e58c7f3eb72c19deb8cf8dcb0cd5c27",
+    url = "https://github.com/benh/stout-grpc/archive/0.2.0.tar.gz",
+    sha256 = "7821db84572b0ba0973b7bac82cbdc421aa3e962e39fc1a79bae5c893385ff8c",
+    strip_prefix = "stout-grpc-0.2.0",
 )
 
 load("@stout-grpc//bazel:stout_grpc_deps.bzl", "stout_grpc_deps")
