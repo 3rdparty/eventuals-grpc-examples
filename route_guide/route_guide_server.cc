@@ -135,8 +135,7 @@ class RouteGuideImpl final {
 
           call->OnRead(
               [this, point_count, feature_count, distance, previous, start_time](
-                  stout::grpc::ServerCall<Stream<Point>, RouteSummary>* call, auto&& point) mutable {
-                  // auto* call, auto&& point) mutable {
+                  auto* call, auto&& point) mutable {
             if (point) {
               point_count++;
               if (!GetFeatureName(*point, feature_list_).empty()) {
