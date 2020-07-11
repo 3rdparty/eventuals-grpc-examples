@@ -28,7 +28,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
     name = "stout-grpc",
     remote = "https://github.com/benh/stout-grpc.git",
-    commit = "1f2da648b16ef6c131a2f9df17690f5ada30290d",
+    commit = "5d2d90df7e58c7f3eb72c19deb8cf8dcb0cd5c27",
 )
 
 load("@stout-grpc//bazel:stout_grpc_deps.bzl", "stout_grpc_deps")
