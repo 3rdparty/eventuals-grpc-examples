@@ -17,9 +17,9 @@ grpc_extra_deps()
 
 http_archive(
     name = "stout-grpc",
-    url = "https://github.com/benh/stout-grpc/archive/0.2.0.tar.gz",
-    sha256 = "7821db84572b0ba0973b7bac82cbdc421aa3e962e39fc1a79bae5c893385ff8c",
-    strip_prefix = "stout-grpc-0.2.0",
+    url = "https://github.com/benh/stout-grpc/archive/0.3.0.tar.gz",
+    sha256 = "de1df0577a0bfd0b2e99a7bd9e89d0ff41062d2d37255f46ac7a8263c4a1f7e2",
+    strip_prefix = "stout-grpc-0.3.0",
 )
 
 load("@stout-grpc//bazel:stout_grpc_deps.bzl", "stout_grpc_deps")
