@@ -32,7 +32,7 @@ cc_binary(
     data = ["route_guide/route_guide_db.json"],
     deps = [
         ":route_guide_grpc",
-        "@com_github_3rdparty_eventuals_grpc//:grpc",
+        "@com_github_grpc_grpc//:grpc++",
     ],
 )
 
@@ -42,6 +42,34 @@ cc_binary(
         "route_guide/helper.cc",
         "route_guide/helper.h",
         "route_guide/route_guide_server.cc",
+    ],
+    data = ["route_guide/route_guide_db.json"],
+    deps = [
+        ":route_guide_grpc",
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+cc_binary(
+    name = "route_guide_eventuals_client",
+    srcs = [
+        "route_guide/helper.cc",
+        "route_guide/helper.h",
+        "route_guide/route_guide_eventuals_client.cc",
+    ],
+    data = ["route_guide/route_guide_db.json"],
+    deps = [
+        ":route_guide_grpc",
+        "@com_github_3rdparty_eventuals_grpc//:grpc",
+    ],
+)
+
+cc_binary(
+    name = "route_guide_eventuals_server",
+    srcs = [
+        "route_guide/helper.cc",
+        "route_guide/helper.h",
+        "route_guide/route_guide_eventuals_server.cc",
 
         "route_guide/route_guide.eventuals.cc",
         "route_guide/route_guide.eventuals.h",
