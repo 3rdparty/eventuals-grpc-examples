@@ -34,8 +34,8 @@
 #include "eventuals/map.h"
 #include "eventuals/then.h"
 #include "helper.h"
+#include "protos/route_guide.eventuals.h"
 #include "protos/route_guide.grpc.pb.h"
-#include "route_guide/route_guide.eventuals.h"
 
 using routeguide::Point;
 using routeguide::Feature;
