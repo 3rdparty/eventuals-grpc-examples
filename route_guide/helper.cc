@@ -26,6 +26,7 @@
 
 #include "protos/route_guide.grpc.pb.h"
 
+
 namespace routeguide {
 
 std::string GetDbFileContent(int argc, char** argv) {
@@ -50,7 +51,7 @@ std::string GetDbFileContent(int argc, char** argv) {
   std::ifstream db_file(db_path);
   if (!db_file.is_open()) {
     std::cout << "Failed to open " << db_path << std::endl;
-    return "";
+    abort();
   }
   std::stringstream db;
   db << db_file.rdbuf();
@@ -62,7 +63,8 @@ std::string GetDbFileContent(int argc, char** argv) {
 // "the name can be empty" }, { ... } ... The spaces will be stripped.
 class Parser {
  public:
-  explicit Parser(const std::string& db) : db_(db) {
+  explicit Parser(const std::string& db)
+    : db_(db) {
     // Remove all spaces.
     db_.erase(std::remove_if(db_.begin(), db_.end(), isspace), db_.end());
     if (!Match("[")) {
@@ -70,7 +72,9 @@ class Parser {
     }
   }
 
-  bool Finished() { return current_ >= db_.size(); }
+  bool Finished() {
+    return current_ >= db_.size();
+  }
 
   bool TryParseOne(Feature* feature) {
     if (failed_ || Finished() || !Match("{")) {
@@ -120,8 +124,7 @@ class Parser {
 
   void ReadLong(long* l) {
     size_t start = current_;
-    while (current_ != db_.size() && db_[current_] != ',' &&
-           db_[current_] != '}') {
+    while (current_ != db_.size() && db_[current_] != ',' && db_[current_] != '}') {
       current_++;
     }
     // It will throw an exception if fails.
@@ -158,4 +161,4 @@ void ParseDb(const std::string& db, std::vector<Feature>* feature_list) {
             << std::endl;
 }
 
-}  // namespace routeguide
+} // namespace routeguide

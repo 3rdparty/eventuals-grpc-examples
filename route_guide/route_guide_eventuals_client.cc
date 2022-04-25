@@ -46,12 +46,12 @@
 using grpc::ClientContext;
 using grpc::Status;
 
-using routeguide::Point;
 using routeguide::Feature;
+using routeguide::Point;
 using routeguide::Rectangle;
-using routeguide::RouteSummary;
-using routeguide::RouteNote;
 using routeguide::RouteGuide;
+using routeguide::RouteNote;
+using routeguide::RouteSummary;
 
 using stout::Borrowable;
 
@@ -77,16 +77,14 @@ Point MakePoint(long latitude, long longitude) {
   return p;
 }
 
-Feature MakeFeature(const std::string& name,
-                    long latitude, long longitude) {
+Feature MakeFeature(const std::string& name, long latitude, long longitude) {
   Feature f;
   f.set_name(name);
   f.mutable_location()->CopyFrom(MakePoint(latitude, longitude));
   return f;
 }
 
-RouteNote MakeRouteNote(const std::string& message,
-                        long latitude, long longitude) {
+RouteNote MakeRouteNote(const std::string& message, long latitude, long longitude) {
   RouteNote n;
   n.set_message(message);
   n.mutable_location()->CopyFrom(MakePoint(latitude, longitude));
@@ -135,7 +133,8 @@ class RouteGuideClient {
                     })
                  | Then([](Status&& status) {
                       if (status.ok()) {
-                        std::cout << "ListFeatures rpc succeeded." << std::endl;
+                        std::cout << "ListFeatures rpc succeeded."
+                                  << std::endl;
                       } else {
                         std::cout << "ListFeatures rpc failed." << std::endl;
                       }
@@ -144,34 +143,14 @@ class RouteGuideClient {
   }
 
   auto RecordRoute() {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     return client_.Call<RouteGuide, Stream<Point>, RouteSummary>("RecordRoute")
         | Then(Let(
-            [this,
-             generator = std::default_random_engine(seed),
-             feature_distribution = std::uniform_int_distribution<int>(
-                 0,
-                 feature_list_.size() - 1),
-             delay_distribution = std::uniform_int_distribution<int>(
-                 500,
-                 1500)](auto& call) mutable {
-              const int kPoints = 10;
+            [this](auto& call) mutable {
               return Foreach(
-                         Range(kPoints),
-                         ([&](int) {
-                           const Feature& f =
-                               feature_list_[feature_distribution(generator)];
-
-                           auto latitude = f.location().latitude();
-                           auto longitude = f.location().longitude();
-
-                           std::cout << "Visiting point "
-                                     << latitude / kCoordFactor_ << ", "
-                                     << longitude / kCoordFactor_ << std::endl;
-
-                           return call.Writer().Write(f.location())
-                               | Timer(std::chrono::milliseconds(
-                                   delay_distribution(generator)));
+                         Range(kPoints_),
+                         ([&](int pos) {
+                           const Feature& f = feature_list_[pos];
+                           return call.Writer().Write(f.location());
                          }))
                   | call.WritesDone()
                   | call.Reader().Read()
@@ -179,26 +158,16 @@ class RouteGuideClient {
                   | Finally(Let([&](auto& stats) {
                        return call.Finish()
                            | Then([&](Status&& status) {
-                                if (status.ok() && stats) {
-                                  std::cout
-                                      << "Finished trip with "
-                                      << stats->point_count() << " points\n"
-                                      << "Passed " << stats->feature_count()
-                                      << " features\n"
-                                      << "Travelled " << stats->distance()
-                                      << " meters\n"
-                                      << "It took " << stats->elapsed_time()
-                                      << " seconds"
-                                      << std::endl;
-                                } else {
-                                  std::cout
-                                      << "RecordRoute rpc failed." << std::endl;
-                                }
+                                CHECK(status.ok());
+                                CHECK(stats);
+
+                                CHECK_EQ(stats->point_count(), kPoints_);
+                                CHECK_EQ(stats->feature_count(), kPoints_);
+                                CHECK_EQ(stats->distance(), 675412);
                               });
                      }));
             }));
   }
-
   auto RouteChat() {
     return client_.Call<
                RouteGuide,
@@ -265,7 +234,8 @@ class RouteGuideClient {
                                }
 
                                auto latitude = feature->location().latitude();
-                               auto longitude = feature->location().longitude();
+                               auto longitude =
+                                   feature->location().longitude();
 
                                if (feature->name().empty()) {
                                  std::cout
@@ -286,6 +256,7 @@ class RouteGuideClient {
   }
 
   const float kCoordFactor_ = 10000000.0;
+  const int kPoints_ = 10;
   Client client_;
   std::vector<Feature> feature_list_;
 };
@@ -299,7 +270,7 @@ auto RouteGuideClient::GetFeature() {
 
 int main(int argc, char** argv) {
   EventLoop::ConstructDefaultAndRunForeverDetached();
-    
+
   Borrowable<CompletionPool> pool;
 
   // Expect only arg: --db_path=path/to/route_guide_db.json.
