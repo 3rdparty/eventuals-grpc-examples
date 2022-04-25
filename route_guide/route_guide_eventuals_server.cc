@@ -37,11 +37,11 @@
 #include "protos/route_guide.eventuals.h"
 #include "protos/route_guide.grpc.pb.h"
 
-using routeguide::Point;
 using routeguide::Feature;
+using routeguide::Point;
 using routeguide::Rectangle;
-using routeguide::RouteSummary;
 using routeguide::RouteNote;
+using routeguide::RouteSummary;
 
 using routeguide::eventuals::RouteGuide;
 
@@ -62,10 +62,11 @@ using eventuals::grpc::ServerBuilder;
 using eventuals::grpc::ServerReader;
 
 float ConvertToRadians(float num) {
-  return num * 3.1415926 /180;
+  return num * 3.1415926 / 180;
 }
 
-// The formula is based on http://mathforum.org/library/drmath/view/51879.html
+// The formula is based on
+// http://mathforum.org/library/drmath/view/51879.html
 float GetDistance(const Point& start, const Point& end) {
   const float kCoordFactor = 10000000.0;
   float lat_1 = start.latitude() / kCoordFactor;
@@ -74,22 +75,22 @@ float GetDistance(const Point& start, const Point& end) {
   float lon_2 = end.longitude() / kCoordFactor;
   float lat_rad_1 = ConvertToRadians(lat_1);
   float lat_rad_2 = ConvertToRadians(lat_2);
-  float delta_lat_rad = ConvertToRadians(lat_2-lat_1);
-  float delta_lon_rad = ConvertToRadians(lon_2-lon_1);
+  float delta_lat_rad = ConvertToRadians(lat_2 - lat_1);
+  float delta_lon_rad = ConvertToRadians(lon_2 - lon_1);
 
-  float a = pow(sin(delta_lat_rad/2), 2) + cos(lat_rad_1) * cos(lat_rad_2) *
-            pow(sin(delta_lon_rad/2), 2);
-  float c = 2 * atan2(sqrt(a), sqrt(1-a));
+  float a = pow(sin(delta_lat_rad / 2), 2) + cos(lat_rad_1) * cos(lat_rad_2) * pow(sin(delta_lon_rad / 2), 2);
+  float c = 2 * atan2(sqrt(a), sqrt(1 - a));
   int R = 6371000; // metres
 
   return R * c;
 }
 
-std::string GetFeatureName(const Point& point,
-                           const std::vector<Feature>& feature_list) {
+std::string GetFeatureName(
+    const Point& point,
+    const std::vector<Feature>& feature_list) {
   for (const Feature& f : feature_list) {
-    if (f.location().latitude() == point.latitude() &&
-        f.location().longitude() == point.longitude()) {
+    if (f.location().latitude() == point.latitude()
+        && f.location().longitude() == point.longitude()) {
       return f.name();
     }
   }
@@ -130,14 +131,15 @@ class RouteGuideImpl final
            });
   }
 
-  auto RecordRoute(grpc::ServerContext* context, ServerReader<Point>& reader) {
+  auto RecordRoute(
+      grpc::ServerContext* context,
+      ServerReader<Point>& reader) {
     return Closure([this,
                     &reader,
                     point_count = 0,
                     feature_count = 0,
                     distance = 0.0,
-                    previous = Point(),
-                    start_time = system_clock::now()]() mutable {
+                    previous = Point()]() mutable {
       return reader.Read()
           | Map([&](Point&& point) {
                point_count++;
@@ -151,14 +153,10 @@ class RouteGuideImpl final
              })
           | Loop()
           | Then([&]() {
-               system_clock::time_point end_time = system_clock::now();
                RouteSummary summary;
                summary.set_point_count(point_count);
                summary.set_feature_count(feature_count);
                summary.set_distance(static_cast<long>(distance));
-               auto secs = std::chrono::duration_cast<std::chrono::seconds>(
-                   end_time - start_time);
-               summary.set_elapsed_time(secs.count());
                return summary;
              });
     });
@@ -184,7 +182,9 @@ class RouteGuideImpl final
   //     ...] -> ...]
   //   }
 
-  auto RouteChat(grpc::ServerContext* context, ServerReader<RouteNote>& reader) {
+  auto RouteChat(
+      grpc::ServerContext* context,
+      ServerReader<RouteNote>& reader) {
     return reader.Read()
         | FlatMap(Let(
             [this, notes = std::vector<RouteNote>()](RouteNote& note) mutable {

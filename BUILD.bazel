@@ -5,7 +5,7 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 # bringing in 'rules_proto_grpc' in WORKSPACE.bazel).
 load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
 
-load("@com_github_3rdparty_eventuals_grpc//bazel:cc_eventuals_library.bzl", "cc_eventuals_library")
+load("@com_github_3rdparty_eventuals//bazel:cc_eventuals_library.bzl", "cc_eventuals_library")
 
 proto_library(
     name = "route_guide",
@@ -62,12 +62,14 @@ cc_binary(
     data = ["route_guide/route_guide_db.json"],
     deps = [
         ":route_guide_grpc",
-        "@com_github_3rdparty_eventuals_grpc//:grpc",
+        "@com_github_3rdparty_eventuals//eventuals/grpc",
+        "@com_github_3rdparty_stout//:stout",
     ],
 )
 
 cc_eventuals_library(
     name="route_guide_eventuals_generated",
+    srcs = ["protos/route_guide.proto"],
     deps=[":route_guide"]
 )
 
@@ -76,7 +78,7 @@ cc_library(
     srcs=["route_guide_eventuals_generated"],
     deps=[
         ":route_guide_grpc",
-        "@com_github_3rdparty_eventuals_grpc//:grpc",
+        "@com_github_3rdparty_eventuals//eventuals/grpc"
     ],
 )
 
@@ -90,5 +92,6 @@ cc_binary(
     data = ["route_guide/route_guide_db.json"],
     deps = [
         ":route_guide_eventuals",
+        "@com_github_3rdparty_stout//:stout",
     ],
 )
