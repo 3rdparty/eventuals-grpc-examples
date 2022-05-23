@@ -1,18 +1,5 @@
-# gRPC Examples using `eventuals::grpc`
+[![status: archive](https://github.com/GIScience/badges/raw/master/status/archive.svg)](https://github.com/GIScience/badges#archive) [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-This repository provides [gRPC](https://grpc.io) examples written using [`eventuals::grpc`](https://github.com/3rdparty/eventuals-grpc).
+# DEPRECATED - migrated into [`3rdparty/eventuals/test/grpc/route_guide`](https://github.com/onelxj/eventuals/tree/routeGuideTest/test/grpc/route_guide).
 
-These examples are in a separate repository from `eventuals::grpc` to make it easier to clone that repository and start building a project rather than trying to figure out what pieces of the `eventuals::grpc` build should be copied.
-
-**Please see the `eventuals::grpc` [README](https://github.com/3rdparty/eventuals-grpc) for more information on the `eventuals::grpc` library!**
-
-## RouteGuide
-
-The RouteGuide example can be found in [route_guide](https://github.com/3rdparty/eventuals-grpc-examples/tree/master/route_guide). Build the server and client with:
-
-```sh
-$ bazel build :route_guide_server
-...
-$ bazel build :route_guide_client
-...
-```
+## NOTE: [`eventuals-tutorials`](https://github.com/3rdparty/eventuals-tutorial) is also a good place to see how you can start your own project that uses [`eventuals`](https://github.com/3rdparty/eventuals).
